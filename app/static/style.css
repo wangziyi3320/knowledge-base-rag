@@ -7,7 +7,7 @@
 
 * { box-sizing: border-box; }
 body { margin: 0; }
-button, textarea, input { font: inherit; }
+button, textarea, input, select { font: inherit; }
 
 .shell { width: min(100% - 32px, 980px); margin: 0 auto; padding: 64px 0 96px; }
 header { margin-bottom: 36px; }
@@ -34,9 +34,16 @@ textarea { width: 100%; resize: vertical; border: 1px solid #cfd7df; border-radi
 .form-actions label { color: #687586; }
 .form-actions input { width: 64px; border: 1px solid #cfd7df; border-radius: 8px; padding: 8px; }
 .answer { white-space: pre-wrap; line-height: 1.8; background: #edf7fa; border-radius: 12px; padding: 18px; }
+.evidence-heading { font-size: 16px; margin: 22px 0 2px; }
 .citation { border-top: 1px solid #e0e5ea; padding: 16px 0 4px; }
 .citation h3 { font-size: 15px; margin: 0 0 8px; }
 .citation p { color: #526071; line-height: 1.7; margin: 0; }
+.ticket-form { display: grid; gap: 12px; margin-top: 18px; }
+.ticket-form > label:not(.confirm) { display: grid; gap: 6px; color: #526071; }
+.ticket-form input[type="text"], .ticket-form select { width: 100%; border: 1px solid #cfd7df; border-radius: 8px; padding: 10px; }
+.ticket-form textarea { margin-top: 0; }
+.ticket-form .confirm { display: flex; gap: 8px; align-items: center; }
+.ticket-form button { justify-self: start; }
 .hidden { display: none; }
 
 @media (max-width: 640px) {
@@ -45,4 +52,3 @@ textarea { width: 100%; resize: vertical; border: 1px solid #cfd7df; border-radi
   .section-title, .form-actions { align-items: stretch; flex-direction: column; }
   .upload-button, button { text-align: center; }
 }
-

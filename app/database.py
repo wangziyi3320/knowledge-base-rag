@@ -47,7 +47,38 @@ class Database:
                     FOREIGN KEY(document_id) REFERENCES documents(id) ON DELETE CASCADE
                 );
                 CREATE INDEX IF NOT EXISTS idx_chunks_document ON chunks(document_id);
+                CREATE TABLE IF NOT EXISTS metadata (
+                    key TEXT PRIMARY KEY,
+                    value TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS tickets (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL,
+                    description TEXT NOT NULL,
+                    category TEXT NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'open',
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                );
                 """
+            )
+
+    def ensure_embedding_profile(self, profile: str) -> None:
+        """Prevent silently mixing vectors from incompatible embedding models."""
+        with self.connect() as connection:
+            stored = connection.execute(
+                "SELECT value FROM metadata WHERE key = 'embedding_profile'"
+            ).fetchone()
+            document_count = connection.execute("SELECT COUNT(*) FROM documents").fetchone()[0]
+            if stored and stored["value"] == profile:
+                return
+            if document_count:
+                raise ValueError(
+                    "Embedding configuration differs from the indexed documents. "
+                    "Use a new RAG_DB_PATH and re-upload the documents."
+                )
+            connection.execute(
+                "INSERT OR REPLACE INTO metadata(key, value) VALUES ('embedding_profile', ?)",
+                (profile,),
             )
 
     def create_document(self, name: str, content_type: str, checksum: str) -> int:
@@ -106,3 +137,29 @@ class Database:
                 item["embedding"] = json.loads(item["embedding"])
                 result.append(item)
             return result
+
+    def create_ticket(self, title: str, description: str, category: str) -> dict:
+        with self.connect() as connection:
+            cursor = connection.execute(
+                "INSERT INTO tickets(title, description, category) VALUES (?, ?, ?)",
+                (title, description, category),
+            )
+            row = connection.execute(
+                "SELECT * FROM tickets WHERE id = ?", (cursor.lastrowid,)
+            ).fetchone()
+            return dict(row)
+
+    def list_tickets(self) -> list[dict]:
+        with self.connect() as connection:
+            rows = connection.execute("SELECT * FROM tickets ORDER BY id DESC").fetchall()
+            return [dict(row) for row in rows]
+
+    def update_ticket_status(self, ticket_id: int, status: str) -> dict | None:
+        with self.connect() as connection:
+            cursor = connection.execute(
+                "UPDATE tickets SET status = ? WHERE id = ?", (status, ticket_id)
+            )
+            if not cursor.rowcount:
+                return None
+            row = connection.execute("SELECT * FROM tickets WHERE id = ?", (ticket_id,)).fetchone()
+            return dict(row)

@@ -25,6 +25,10 @@ class HashEmbeddingProvider:
     def __init__(self, dimension: int = 384):
         self.dimension = dimension
 
+    @property
+    def profile(self) -> str:
+        return f"hash:{self.dimension}"
+
     def embed(self, texts: list[str]) -> list[list[float]]:
         return [self._embed_one(text) for text in texts]
 
@@ -48,6 +52,10 @@ class OpenAICompatibleEmbeddingProvider:
         self.api_key = api_key
         self.model = model
 
+    @property
+    def profile(self) -> str:
+        return f"api:{self.url}:{self.model}"
+
     def embed(self, texts: list[str]) -> list[list[float]]:
         response = httpx.post(
             self.url,
@@ -61,9 +69,13 @@ class OpenAICompatibleEmbeddingProvider:
 
 
 def create_embedding_provider(settings) -> EmbeddingProvider:
-    if settings.embedding_provider.lower() == "api":
+    provider = settings.embedding_provider.lower()
+    if provider == "api":
         return OpenAICompatibleEmbeddingProvider(
-            settings.api_base_url, settings.api_key, settings.embedding_model
+            settings.embedding_api_base_url or settings.api_base_url,
+            settings.embedding_api_key or settings.api_key,
+            settings.embedding_model,
         )
-    return HashEmbeddingProvider(settings.embedding_dimension)
-
+    if provider == "hash":
+        return HashEmbeddingProvider(settings.embedding_dimension)
+    raise ValueError(f"Unknown embedding provider: {settings.embedding_provider}")

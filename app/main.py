@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import httpx
 from fastapi import FastAPI, File, HTTPException, UploadFile
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -12,25 +12,23 @@ from app.database import Database
 from app.embeddings import create_embedding_provider
 from app.generation import AnswerGenerator
 from app.ingestion import ingest_document
-from app.retrieval import HybridRetriever
-from app.schemas import Citation, DocumentInfo, QueryRequest, QueryResponse
+from app.retrieval import HybridRetriever, has_sufficient_evidence
+from app.schemas import (
+    Citation, DocumentInfo, QueryRequest, QueryResponse, TicketCreate, TicketDraft,
+    TicketDraftRequest, TicketInfo, TicketStatusUpdate,
+)
+from app.tickets import make_ticket_draft
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings()
     database = Database(settings.db_path)
     embedding_provider = create_embedding_provider(settings)
+    database.ensure_embedding_profile(embedding_provider.profile)
     retriever = HybridRetriever(database, embedding_provider, settings.hybrid_alpha)
     generator = AnswerGenerator(settings)
 
     application = FastAPI(title="Knowledge Base RAG", version="0.1.0")
-    application.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-
     static_dir = Path(__file__).parent / "static"
     application.mount("/static", StaticFiles(directory=static_dir), name="static")
 
@@ -61,6 +59,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             )
         except ValueError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
+        except httpx.HTTPError as error:
+            raise HTTPException(status_code=502, detail=f"Embedding API request failed: {error}") from error
 
     @application.delete("/api/documents/{document_id}")
     def delete_document(document_id: int):
@@ -70,11 +70,24 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @application.post("/api/query", response_model=QueryResponse)
     def query(request: QueryRequest):
-        results = retriever.search(request.question, request.top_k)
         try:
-            answer, mode = generator.generate(request.question, results)
-        except httpx.HTTPError as error:  # type: ignore[name-defined]
-            raise HTTPException(status_code=502, detail=f"Model API request failed: {error}") from error
+            results = retriever.search(request.question, request.top_k)
+        except httpx.HTTPError as error:
+            raise HTTPException(status_code=502, detail=f"Embedding API request failed: {error}") from error
+        answerable = has_sufficient_evidence(
+            results[0] if results else None,
+            settings,
+            semantic_provider=settings.embedding_provider.lower() == "api",
+        )
+        if answerable:
+            try:
+                answer, mode = generator.generate(request.question, results)
+            except httpx.HTTPError as error:
+                raise HTTPException(status_code=502, detail=f"Model API request failed: {error}") from error
+            if mode in {"unverified-generation", "insufficient-evidence"}:
+                answerable = False
+        else:
+            answer, mode = "知识库中没有足够信息。", "insufficient-evidence"
         citations = [
             Citation(
                 rank=index,
@@ -86,12 +99,41 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             )
             for index, item in enumerate(results, start=1)
         ]
-        return QueryResponse(answer=answer, citations=citations, generation_mode=mode)
+        if answerable:
+            reason = "通过最低证据条件；请继续核对原文。"
+        elif mode == "unverified-generation":
+            reason = "模型回答未提供有效引用，已拒绝该回答。"
+        else:
+            reason = "当前知识片段不足以支持回答。"
+        return QueryResponse(
+            answer=answer,
+            citations=citations,
+            generation_mode=mode,
+            answerable=answerable,
+            evidence_reason=reason,
+        )
+
+    @application.post("/api/tickets/draft", response_model=TicketDraft)
+    def draft_ticket(request: TicketDraftRequest):
+        return make_ticket_draft(request.question)
+
+    @application.post("/api/tickets", response_model=TicketInfo)
+    def create_ticket(request: TicketCreate):
+        # Pydantic requires confirmed=true; the draft endpoint never persists data.
+        return database.create_ticket(request.title, request.description, request.category)
+
+    @application.get("/api/tickets", response_model=list[TicketInfo])
+    def list_tickets():
+        return database.list_tickets()
+
+    @application.patch("/api/tickets/{ticket_id}", response_model=TicketInfo)
+    def update_ticket_status(ticket_id: int, request: TicketStatusUpdate):
+        ticket = database.update_ticket_status(ticket_id, request.status)
+        if ticket is None:
+            raise HTTPException(status_code=404, detail="Ticket not found")
+        return ticket
 
     return application
 
 
-import httpx  # imported late to keep endpoint error handling explicit
-
 app = create_app()
-

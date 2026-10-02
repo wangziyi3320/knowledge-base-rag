@@ -35,10 +35,29 @@
         </form>
         <p id="queryStatus" class="status"></p>
         <article id="answer" class="answer hidden"></article>
+        <h3 id="citationHeading" class="evidence-heading hidden"></h3>
         <div id="citations" class="citations"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title"><div><span>03</span><h2>工单草稿</h2></div></div>
+        <p class="intro">问题仍需人工处理时，可将上方提问转为可编辑草稿。核对并确认后才保存工单。</p>
+        <button id="draftTicket" type="button">用当前提问生成草稿</button>
+        <form id="ticketForm" class="ticket-form hidden">
+          <label>标题<input id="ticketTitle" type="text" minlength="2" maxlength="100" required /></label>
+          <label>分类
+            <select id="ticketCategory">
+              <option>账号</option><option>网络</option><option>设备</option><option>财务</option><option>其他</option>
+            </select>
+          </label>
+          <label>问题描述<textarea id="ticketDescription" rows="3" minlength="2" maxlength="2000" required></textarea></label>
+          <label class="confirm"><input id="ticketConfirm" type="checkbox" required /> 我已核对草稿，确认提交工单</label>
+          <button type="submit">确认并保存</button>
+        </form>
+        <p id="ticketStatus" class="status"></p>
+        <div id="ticketList" class="document-list"></div>
       </section>
     </main>
     <script src="/static/app.js" type="module"></script>
   </body>
 </html>
-

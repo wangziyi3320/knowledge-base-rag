@@ -1,18 +1,29 @@
 [
-  {
-    "question": "需求进入开发排期前需要完成什么？",
-    "expected_terms": ["需求评审", "验收标准", "优先级"],
-    "source": "project_handbook.md"
-  },
-  {
-    "question": "代码合并前有哪些要求？",
-    "expected_terms": ["本地测试", "代码审查"],
-    "source": "project_handbook.md"
-  },
-  {
-    "question": "项目发布完成后需要做什么？",
-    "expected_terms": ["冒烟测试", "版本号", "回滚方案"],
-    "source": "project_handbook.md"
-  }
+  {"question": "需求进入开发排期前要经过什么？", "source": "project_handbook.md", "expected_quote": "需求评审通过后才能进入开发排期"},
+  {"question": "需求范围变化时要记录哪些内容？", "source": "project_handbook.md", "expected_quote": "记录变更原因、影响模块和新的交付时间"},
+  {"question": "代码合并前需要谁审查？", "source": "project_handbook.md", "expected_quote": "至少一名成员完成代码审查后才可以合并"},
+  {"question": "发布后应做什么测试？", "source": "project_handbook.md", "expected_quote": "发布完成后需要执行冒烟测试"},
+  {"question": "复盘行动项要包括什么？", "source": "project_handbook.md", "expected_quote": "明确负责人、完成时间和验证方式"},
+  {"question": "忘记系统密码且自助重置失败怎么办？", "source": "it_service_guide.md", "expected_quote": "通过服务台提交账号支持工单"},
+  {"question": "申请 VPN 权限要写哪些信息？", "source": "it_service_guide.md", "expected_quote": "填写访问目的、目标系统和预计使用期限"},
+  {"question": "电脑无法启动时提交维修工单要填什么？", "source": "it_service_guide.md", "expected_quote": "填写资产编号、故障现象和可联系时间"},
+  {"question": "维修完成后申请人要做什么？", "source": "it_service_guide.md", "expected_quote": "确认设备恢复正常，并在工单中填写处理反馈"},
+  {"question": "差旅报销要提供哪些材料？", "source": "expense_policy.md", "expected_quote": "提供行程单、有效发票和事前审批记录"},
+  {"question": "采购报销需要哪些凭证？", "source": "expense_policy.md", "expected_quote": "提供采购申请、验收记录和发票"},
+  {"question": "报销申请先由谁核对业务真实性？", "source": "expense_policy.md", "expected_quote": "直属负责人先核对业务真实性"},
+  {"question": "接口测试需要检查什么？", "source": "testing_standard.md", "expected_quote": "同时检查状态码、响应结构和关键业务字段"},
+  {"question": "提交缺陷需要写明哪些信息？", "source": "testing_standard.md", "expected_quote": "写明环境、复现步骤、实际结果、预期结果和附件"},
+  {"question": "阻断性缺陷修复后如何回归？", "source": "testing_standard.md", "expected_quote": "先回归原问题，再检查相关流程是否受到影响"},
+  {"question": "缺陷关闭前要确认什么？", "source": "testing_standard.md", "expected_quote": "确认修复版本和回归结果"},
+  {"question": "员工婚假有多少天？", "source": null},
+  {"question": "公司食堂周末几点营业？", "source": null},
+  {"question": "机票报销的金额上限是多少？", "source": null},
+  {"question": "采购超过多少钱需要额外审批？", "source": null},
+  {"question": "VPN 续期要提前多少天申请？", "source": null},
+  {"question": "维修工单会自动批准购买新电脑吗？", "source": "it_service_guide.md", "expected_quote": "维修工单不会自动批准采购新设备"},
+  {"question": "缺陷数量的年度考核指标是多少？", "source": null},
+  {"question": "差旅报销提交材料后几天内到账？", "source": null},
+  {"question": "VPN 权限申请一般几个工作日审批完成？", "source": null},
+  {"question": "阻断性缺陷修复后回归测试必须在几小时内完成？", "source": null},
+  {"question": "谁是今年的蓝桥杯冠军？", "source": null}
 ]
-

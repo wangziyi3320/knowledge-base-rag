@@ -2,7 +2,8 @@ from pathlib import Path
 
 from app.database import Database
 from app.embeddings import HashEmbeddingProvider
-from app.retrieval import HybridRetriever
+from app.retrieval import HybridRetriever, cosine_similarity, has_sufficient_evidence
+from app.config import Settings
 
 
 def test_hybrid_retrieval_returns_relevant_chunk():
@@ -22,3 +23,20 @@ def test_hybrid_retrieval_returns_relevant_chunk():
     assert results
     assert "冒烟测试" in results[0]["content"]
     path.unlink(missing_ok=True)
+
+
+def test_cosine_uses_vector_norms_and_handles_zero():
+    assert cosine_similarity([2.0, 0.0], [5.0, 0.0]) == 1.0
+    assert cosine_similarity([0.0, 0.0], [5.0, 0.0]) == 0.0
+    assert cosine_similarity([1.0, 0.0], [0.0, 1.0]) == 0.0
+
+
+def test_evidence_gate_does_not_trust_relative_ranking_score():
+    settings = Settings()
+    weak_top_result = {
+        "score": 1.0,
+        "lexical_coverage": 0.0,
+        "matched_terms": 0,
+        "dense_score": 0.95,
+    }
+    assert not has_sufficient_evidence(weak_top_result, settings, semantic_provider=False)
