@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="支持文档上传、混合检索和引用溯源的本地知识库 RAG 演示" />
+    <title>知识库 RAG</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <p class="eyebrow">LOCAL KNOWLEDGE BASE</p>
+        <h1>知识库 RAG</h1>
+        <p class="intro">上传 TXT、Markdown 或 PDF，使用混合检索定位证据，并生成带引用的回答。</p>
+      </header>
+
+      <section class="panel">
+        <div class="section-title">
+          <div><span>01</span><h2>文档管理</h2></div>
+          <label class="upload-button">上传文档<input id="fileInput" type="file" accept=".txt,.md,.pdf" /></label>
+        </div>
+        <p id="uploadStatus" class="status"></p>
+        <div id="documentList" class="document-list"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title"><div><span>02</span><h2>知识问答</h2></div></div>
+        <form id="queryForm">
+          <textarea id="question" rows="3" placeholder="例如：系统支持哪些文件格式？" required></textarea>
+          <div class="form-actions">
+            <label>返回片段 <input id="topK" type="number" min="1" max="12" value="5" /></label>
+            <button type="submit">检索并回答</button>
+          </div>
+        </form>
+        <p id="queryStatus" class="status"></p>
+        <article id="answer" class="answer hidden"></article>
+        <div id="citations" class="citations"></div>
+      </section>
+    </main>
+    <script src="/static/app.js" type="module"></script>
+  </body>
+</html>
+

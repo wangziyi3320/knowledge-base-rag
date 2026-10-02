@@ -1,0 +1,48 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, "Microsoft YaHei", system-ui, sans-serif;
+  color: #18212f;
+  background: #f4f6f8;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, textarea, input { font: inherit; }
+
+.shell { width: min(100% - 32px, 980px); margin: 0 auto; padding: 64px 0 96px; }
+header { margin-bottom: 36px; }
+.eyebrow { color: #176b87; font-weight: 700; letter-spacing: .14em; font-size: 12px; }
+h1 { margin: 8px 0; font-size: clamp(36px, 8vw, 68px); letter-spacing: -.04em; }
+.intro { max-width: 650px; color: #536172; line-height: 1.8; }
+
+.panel { background: white; border: 1px solid #dce2e8; border-radius: 18px; padding: 26px; margin-top: 20px; box-shadow: 0 16px 50px rgba(31, 46, 61, .06); }
+.section-title, .section-title > div, .form-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.section-title span { color: #176b87; font-weight: 800; }
+h2 { margin: 0; font-size: 21px; }
+
+.upload-button, button { border: 0; border-radius: 10px; padding: 11px 16px; background: #176b87; color: white; font-weight: 700; cursor: pointer; }
+.upload-button input { display: none; }
+.status { color: #657285; min-height: 22px; }
+.document-list { display: grid; gap: 10px; }
+.document { display: flex; justify-content: space-between; gap: 20px; align-items: center; padding: 14px; border-radius: 12px; background: #f6f8fa; }
+.document strong { display: block; }
+.document small { color: #687586; }
+.document button { background: transparent; color: #a03333; padding: 6px; }
+
+textarea { width: 100%; resize: vertical; border: 1px solid #cfd7df; border-radius: 12px; padding: 14px; margin-top: 18px; line-height: 1.7; }
+.form-actions { margin-top: 12px; }
+.form-actions label { color: #687586; }
+.form-actions input { width: 64px; border: 1px solid #cfd7df; border-radius: 8px; padding: 8px; }
+.answer { white-space: pre-wrap; line-height: 1.8; background: #edf7fa; border-radius: 12px; padding: 18px; }
+.citation { border-top: 1px solid #e0e5ea; padding: 16px 0 4px; }
+.citation h3 { font-size: 15px; margin: 0 0 8px; }
+.citation p { color: #526071; line-height: 1.7; margin: 0; }
+.hidden { display: none; }
+
+@media (max-width: 640px) {
+  .shell { padding-top: 36px; }
+  .panel { padding: 18px; }
+  .section-title, .form-actions { align-items: stretch; flex-direction: column; }
+  .upload-button, button { text-align: center; }
+}
+

@@ -1,0 +1,18 @@
+[
+  {
+    "question": "需求进入开发排期前需要完成什么？",
+    "expected_terms": ["需求评审", "验收标准", "优先级"],
+    "source": "project_handbook.md"
+  },
+  {
+    "question": "代码合并前有哪些要求？",
+    "expected_terms": ["本地测试", "代码审查"],
+    "source": "project_handbook.md"
+  },
+  {
+    "question": "项目发布完成后需要做什么？",
+    "expected_terms": ["冒烟测试", "版本号", "回滚方案"],
+    "source": "project_handbook.md"
+  }
+]
+

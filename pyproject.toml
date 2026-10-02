@@ -1,0 +1,20 @@
+[project]
+name = "knowledge-base-rag"
+version = "0.1.0"
+description = "A citation-first local knowledge base with hybrid retrieval and optional LLM generation"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi==0.116.1",
+  "uvicorn==0.35.0",
+  "python-multipart==0.0.20",
+  "pypdf==6.1.1",
+  "numpy==2.3.3",
+  "httpx==0.28.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==8.4.2"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
